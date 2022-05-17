@@ -1,0 +1,75 @@
+---
+title: "Distributions"
+author: "BPR"
+date: '2022-05-16'
+output: word_document
+---
+
+To insert a chunk: Ctrl+Alt+I
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+install.packages("tidyverse")   # Put tidyverse on our bookshelf
+library(tidyverse)              # Pull the book over to our desk
+```
+
+
+# Normal Distributions
+
+## Determining normality
+
+### Method 1: Histogram
+```{r}
+hist(pull(read_csv("http://bit.ly/NDSData")))
+```
+Is this normal data?
+
+
+```{r betterHist}
+hist(pull(read_csv("http://bit.ly/NDSData")),   # Get the data
+     main = "Possibly normal data",             # Graph title
+     xlab = "Data",                             # label of x-axis
+     xlim = c(6,12),                            # lower and upper x limits
+     breaks = 20)                               # Number of bins
+```
+
+
+### Shapiro-Wilk test
+```{r}
+shapiro.test(pull(read_csv("http://bit.ly/NDSData")))
+```
+H0 - Not significantly difference from normal distribution
+
+Problem: Absence of evidence is not evidence of absence
+
+### Q-Q plot
+My favorite flavor comes from the car package
+```{r}
+library(car)
+
+qqPlot(pull(read_csv("http://bit.ly/NDSData")))
+```
+
+
+
+
+# Code Your Own
+
+Are the datasets NDSData2 and NDSData3 normal? Why or why not?
+
+http://bit.ly/
+
+
+
+
+
+
+
+
+
+
+
+
+
+

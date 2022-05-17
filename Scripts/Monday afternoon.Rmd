@@ -1,0 +1,129 @@
+---
+title: "Monday Afternoon"
+author: "BPR"
+date: '2022-05-16'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)  # Just because it is helpful
+library(car)                        # qqPlot()
+library(tidyverse)                  # pull(), read_csv() and more!
+```
+
+
+# Power Laws - Part I
+```{r}
+pull(read_csv("http://bit.ly/NDSMoby")) -> 
+  moby_vec
+
+hist(moby_vec,
+     breaks = 100)
+```
+Moral: Histograms and power laws don't always mix well!
+
+Normal doesn't work!
+```{r}
+shapiro.test(moby_vec)
+qqPlot(moby_vec)
+```
+Quick and dirty check for power law behavior in the data. (Don't tell Clauset et al. (2009) that I said this!)
+```{r}
+plot(x = 1:length(moby_vec),          # x-data
+     y = moby_vec,
+     log = "xy",                      # Take the logarithm of the data!
+     main = "Word frequency vs. rank",
+     xlab = "Rank",
+     ylab = "word frequency")
+
+```
+Because this plot is a straight line, the data are fat-tailled (e.g., power law, lognormal, etc.).
+
+Why do we care? Barabasi & Albert: Power law indicates self-organization.
+
+# Bounded distributions
+
+```{r}
+hist(pull(read_csv("http://bit.ly/AnxHighShape")))
+shapiro.test(pull(read_csv("http://bit.ly/AnxHighShape")))
+```
+
+```{r}
+hist(pull(read_csv("http://bit.ly/AnxLowShape")))
+```
+
+
+# Inference
+```{r}
+wilcox.test(pull(read_csv("http://bit.ly/AnxLowShape")),
+            pull(read_csv("http://bit.ly/AnxHighShape")))
+
+read_csv("https://bit.ly/NDSData4") -> 
+  anxiety_df
+wilcox.text(Anxiety ~ as.factor(Group),
+      data = anxiety_df)
+
+library(lmPerm)
+
+summary(aovp(Anxiety ~ as.factor(Group),
+      data = anxiety_df))
+```
+
+
+
+## Code Your Own
+```{r}
+
+wilcox.test(CSE ~ GoodFit,
+            data = read_csv("http://bit.ly/NDSData5"))
+```
+
+
+# Burstiness
+```{r}
+devtools::install_github("barneyricca/buRst")
+library(buRst)
+```
+
+
+```{r}
+event_burstiness(pull(read_csv("http://bit.ly/NDSSpeakers")),
+                 min_iet = 1)
+event_burstiness(pull(read_csv("http://bit.ly/NDSMacro1")), # Fiore et al.
+                 min_iet = 2)
+```
+
+
+# Fractals
+
+```{r}
+read_csv("http://bit.ly/NDSSierpinski") ->
+  sp
+
+str(sp)          # Get the columns (i.e., structure)
+
+plot(x = sp$Scale,       # Dollar sign: Get the column named...
+     y = sp$Remaining,
+     log = "xy")
+```
+
+
+```{r}
+log(sp$Remaining) -> yl  # Log of Remaining into yl
+log(sp$Scale) -> xl      # Log of scale into xl
+summary(lm(yl ~ xl))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
