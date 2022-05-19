@@ -1,0 +1,46 @@
+---
+title: "Wednesday afternoon"
+author: "BPR"
+date: '2022-05-18'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+devtools::install_github("barneyricca/SSG")
+library(SSG)
+
+```
+
+
+# Teacher-student interactions
+```{r}
+read_csv("http://bit.ly/NDSTeacher1") -> t1
+read_csv("http://bit.ly/NDSTeacher2") -> t2
+
+str(t1)
+```
+```{r}
+set.seed(42)
+SSG(t2$TeacherIntensity,
+    t2$StudentIntensity,
+    t2$Onset)
+
+```
+
+# Cusp
+
+```{r}
+install.packages("cusp")
+```
+```{r}
+library(cusp)
+```
+
+
+```{r}
+
+```
+

@@ -1,0 +1,71 @@
+---
+title: "Cusp"
+author: "BPR"
+date: '2022-05-19'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# devtools::install_github("cran/cusp")
+
+library(cusp)
+```
+
+# Oliva data
+```{r}
+data(oliva)        # oliva is a built in (to cusp) dataset; let's use it
+set.seed(121)      # So we all have the same pseudo-random numbers
+fit <- cusp(y ~ z1 + z2 - 1,    # Compare to the simulation
+            alpha ~ x1 + x2 + x3 - 1, 
+            beta ~ y1 + y2 + y3 + y4 - 1, 
+            data = oliva, 
+            start = c(1, -0.9, -0.1, 0.4, 0.1, .6, .2, -.5, -1.5))  # If you have them!
+```
+
+
+```{r}
+summary(fit)
+```
+
+
+```{r}
+cusp3d(fit, B=5.25, n.surf=50, theta=150)
+```
+
+
+```{r}
+plot(fit) 
+
+```
+
+## van der Maas (2003)
+
+```{r}
+data("attitudes")               # Built-in data
+data("attitudeStartingValues")  # Built-in date
+
+cusp(y ~ Attitude,              # Response
+     alpha ~ Involv + Orient,   # Asymmetry
+     beta ~ Involv,             # Bifurcation
+     data = attitudes) -> fit
+summary(fit)
+cusp3d(fit)
+
+plot(fit)
+
+```
+
+```{r}
+read_csv("http://bit.ly/NDSCusp3") -> 
+  chip_df
+
+dim(chip_df)
+chip_df %>%
+  filter(complete.cases(Time, CSET_6_week, PTGI_6_week)) -> dum1
+dim(dum1)
+
+
+
+```
+

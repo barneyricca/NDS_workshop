@@ -1,0 +1,129 @@
+---
+title: "Tuesday Morning"
+author: "BPR"
+date: '2022-05-17'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)  # Just do this.
+
+library(igraph)                     # Need a function from igraph
+library(tidyverse)                  # read_csv(), pull(), etc.
+```
+
+
+# Fractal (fractional) dimension
+```{r paperCrumple}
+read_csv("http://bit.ly/NDSPaperCrumple") ->  # Data file
+  paper_df                                    # Make a "data frame"
+str(paper_df)                                 # Look at structure
+
+```
+
+```{r crumpleDimension}
+summary(                            # Print out everything
+  lm(log(Diameter_A) ~ log(Size),   # Linear model (regression)
+     data = paper_df)               # Data
+)
+```
+
+```{r paperPlot}
+lm(log(Diameter_A) ~ log(Size),   # Linear model (regression)
+     data = paper_df) ->
+  paper_lm                        # Store the linear model
+{
+  plot(paper_df$Size, paper_df$Diameter_A, # Plot the data
+       log = "xy")                         # "log-log" plot
+  abline(paper_lm,                         # Add a line of the lm()
+         col = "blue") 
+}
+
+```
+
+The better approach
+```{r}
+log(paper_df$Diameter_A) -> A_lg
+log(paper_df$Size) -> Size_lg
+summary(lm(A_lg ~ Size_lg))
+```
+
+
+Moral: The log-log regression is biased (esp. in the intercept)
+
+In this case, the geometric dimension is related to the crumpling dimension by inversion: 1/0.43 = 2.317508
+
+
+But the question is important: What does this dimension mean? Is it just a latent construct or proxy or does it mean something real?
+
+
+```{r AFAR}
+pull(read_csv("http://bit.ly/NDSAFAR")) -> afar
+
+table(afar)
+
+```
+
+
+
+# Power Laws of Categorical Data
+
+Approach 1: Time series data often need some additional help in determining the appropriate time scale. Enter _orbital decomposition_ (Guastello).
+
+```{r}
+pull(read_csv("http://bit.ly/NDSAFAR")) ->
+  afar
+
+devtools::install_github("barneyricca/fitpoweRlaw")
+library(fitpoweRlaw)
+```
+
+Now, do some orbital decomposition:
+```{r}
+orbde(afar)
+```
+Ht = "topological entropy"
+
+Minimum Ht is the appropriate length (C).
+
+Pragmatically, use C = 1 for starters:
+```{r}
+sort(table(afar))
+```
+
+Fit power law:
+```{r}
+fit_power_law(unname(table(afar)))
+```
+Kolmogorov-Smirnov statistic
+
+Why not a good fit?
+```{r}
+barplot(sort(table(afar), decreasing = TRUE))
+
+```
+
+log-log fit:
+
+```{r}
+sort(unname(table(afar)), 
+     decreasing = TRUE) -> a1 # Distribution, sorted
+log(a1) -> a1                              # Change to log
+1:length(a1) -> x1                         # Make the ranks
+log(x1) -> x1                              # change to log
+summary(lm(a1 ~ x1))
+```
+
+# Code Your Own
+NDSMacro1 and NDSMacro2 - same small group, different days
+NDSMacro3 and NDSMacro4 - same days as Macro1 & 2, respectively, but different small group.
+
+http://bit.ly/
+```{r}
+pull(read_csv("http://bit.ly/NDSMacro1")) -> a1
+pull(read_csv("http://bit.ly/NDSMacro2")) -> a2
+pull(read_csv("http://bit.ly/NDSMacro3")) -> a3
+pull(read_csv("http://bit.ly/NDSMacro4")) -> a4
+
+```
+

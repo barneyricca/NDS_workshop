@@ -1,0 +1,45 @@
+---
+title: "Tuesday afternoon"
+author: "BPR"
+date: '2022-05-17'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(igraph)
+install.packages("qgraph")
+library(qgraph)
+
+devtools::install_github("barneyricca/transitions")
+devtools::install_github("barneyricca/fitpoweRlaw")
+devtools::install_github("barneyricca/prepText")
+
+library(transitions)  # "barneyricca/transitions"
+library(fitpoweRlaw)  # "barneyricca/fitpoweRlaw"
+library(prepText)     # "barneyricca/textPrep"
+```
+
+
+```{r}
+table(pull(read_csv("http://bit.ly/NDSMacro1"))) -> a1
+table(pull(read_csv("http://bit.ly/NDSMacro2"))) -> a2
+table(pull(read_csv("http://bit.ly/NDSMacro3"))) -> a3
+table(pull(read_csv("http://bit.ly/NDSMacro4"))) -> a4
+
+fit_power_law(unname(a1)) -> m1
+fit_power_law(unname(a2)) -> m2
+fit_power_law(unname(a3)) -> m3
+fit_power_law(unname(a4)) -> m4
+
+```
+
+
+
+With varying C:
+```{r}
+IPL_fit(pull(read_csv("http://bit.ly/NDSMacro1")), 4)
+```
+

@@ -1,0 +1,136 @@
+```{r prepareData}
+library(crqa)
+library(tidyverse)
+
+pull(read_csv("http://bit.ly/NDSQuant2")) -> quant2
+```
+
+
+```{r}
+plot(quant2)
+
+```
+
+
+```{r RQA_computation}
+crqa::crqa(ts1 = quant2,  # Horizontal axis is word_series
+           ts2 = quant2,  # Vertical axis is word_series
+           delay = 0,         # Delay for embedding
+           embed = 1,         # This is a one-dimensional embedding
+           rescale = 2,       # Rescale using the maximum distance
+           radius = 0.01,   # We're doing exact matches, but 
+                              #  setting radius = 0 is numerically
+                              #  a problem
+           normalize = 0,     # Don't normalize
+           mindiagline = 2,   # Threshold to consider a diagonal as a line
+           minvertline = 2,   # Threshold to consider a vertical as a line
+           tw = 0,            # Don't use the line of incidence in
+                              # RQA calculations
+           whiteline = FALSE, # Not used; left in for legacy
+           recpt = FALSE,     # Calculate CRQA from RP or not
+           method = 'rqa',    # RQA. CRQA, MDCRQA also possible.
+           datatype = 'continuous') ->  # Alternative: continuous
+  quant2_rqa
+```
+
+```{r RQA_plot}
+# set plot parameters for the recurrence plot
+list(unit = 400,          # Axes unit markers
+    labelx = "Time",     # x-axis label
+    labely = "Time",     # y-axis label
+    cols = "blue",       # Color
+    pcex = .1,           # size of marker
+    pch = 16,            # Shape of marker
+    labax = seq(0,       # x-axis numerical labels
+                nrow(quant2_rqa$RP),
+                400), 
+    labay = seq(0,
+                nrow(quant2_rqa$RP), 
+                400), 
+    las = 1) ->          # orientation of labels
+  plot_params
+
+plotRP(quant2_rqa$RP, 
+       plot_params)      # generate recurrence plot
+```
+In addition to information that we can gain from looking at (or comparing) recurrence plots, there are several statistics that we can calculate that are useful.
+
+```{r RQA_statistics}
+print(letitbe_rqa[1:10])  # Print RQA statistics
+```
+
+
+# Lorenz and Logistic
+```{r}
+read_csv("http://bit.ly/NDSLogistic1") -> log1
+
+plot(log1$t, log1$x,
+     pch = 16,        # Use solid circles
+     cex = 0.3)       # Make them smaller
+
+1:2000 -> t             # t has 1, 2, 3, 4, ..., 2000
+summary(lm(x ~ t, data = log1))
+
+```
+
+Logistic in state space
+```{r}
+log1[2:2000,] -> log1m1            # Drop the first data point and put in log1m1
+log1[1:1999,] -> log1   # Drop the last data point and put back in log1
+
+# Create a delay state space
+plot(log1$x, log1m1$x, pch = 16, cex = 0.5)
+```
+
+```{r}
+read_csv("http://bit.ly/NDSLorenz1") -> lorenz_df
+
+plot(lorenz_df$x)
+plot(lorenz_df$y)
+plot(lorenz_df$z)
+
+#install.packages("plot3D")
+library(plot3D)
+scatter3D(lorenz_df$x, lorenz_df$x (but delayed by 13), lorenz_df$x (but delayed by 26))
+```
+```{r}
+install.packages("rgl")
+```
+
+
+```{r}
+library(rgl)
+plot3d(lorenz_df$x, lorenz_df$y, lorenz_df$z)
+```
+
+# RQA for Lorenz
+```{r}
+devtools::install_github("aaronlikens/rqapp")
+library(rqapp)
+
+mdrqa(ts = cbind(lorenz_df$X, lorenz_df$Y, lorenz_df$Z), # Read data first!
+      embed = 1, # Each component is embedded in a single dimension
+      delay = 0, 
+      rescale = 0, 
+      normalize = 0,
+      mindiagline = 2, 
+      minvertline = 2, 
+      t_win = 0, 
+      radius = 0.2, 
+      recpt = 1)
+
+```
+
+
+## Delays
+```{r}
+read_csv("http://bit.ly/NDSLorenz") -> lorenz_df
+scatter3D(lorenz_df$X, lorenz_df$Y, lorenz_df$Z)
+```
+```{r}
+lorenz_df$Y[1:4975] -> lY
+lorenz_df$Y[14:4988] -> lY1
+lorenz_df$Y[27:5001] -> lY2
+scatter3D(lY, lY1, lY2)
+```
+

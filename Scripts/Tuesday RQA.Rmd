@@ -1,0 +1,54 @@
+```{r prepareData}
+library(prepText)
+library(crqa)
+
+prepareText(file.choose()) ->
+  wordSeries
+```
+
+```{r RQA_computation}
+crqa::crqa(ts1 = wordSeries,  # Horizontal axis is word_series
+           ts2 = wordSeries,  # Vertical axis is word_series
+           delay = 0,         # Delay for embedding
+           embed = 1,         # This is a one-dimensional embedding
+           rescale = 2,       # Rescale using the maximum distance
+           radius = 0.0001,   # We're doing exact matches, but 
+                              #  setting radius = 0 is numerically
+                              #  a problem
+           normalize = 0,     # Don't normalize
+           mindiagline = 2,   # Threshold to consider a diagonal as a line
+           minvertline = 2,   # Threshold to consider a vertical as a line
+           tw = 0,            # Don't use the line of incidence in
+                              # RQA calculations
+           whiteline = FALSE, # Not used; left in for legacy
+           recpt = FALSE,     # Calculate CRQA from RP or not
+           method = 'rqa',    # RQA. CRQA, MDCRQA also possible.
+           datatype = 'categorical') ->  # Alternative: continuous
+  letitbe_rqa
+```
+
+```{r RQA_plot}
+# set plot parameters for the recurrence plot
+list(unit = 40,          # Axes unit markers
+    labelx = "Time",     # x-axis label
+    labely = "Time",     # y-axis label
+    cols = "blue",       # Color
+    pcex = .4,           # size of marker
+    pch = 16,            # Shape of marker
+    labax = seq(0,       # x-axis numerical labels
+                nrow(letitbe_rqa$RP),
+                40), 
+    labay = seq(0,
+                nrow(letitbe_rqa$RP), 
+                40), 
+    las = 1) ->          # orientation of labels
+  plot_params
+
+plotRP(letitbe_rqa$RP, 
+       plot_params)      # generate recurrence plot
+```
+In addition to information that we can gain from looking at (or comparing) recurrence plots, there are several statistics that we can calculate that are useful.
+
+```{r RQA_statistics}
+print(letitbe_rqa[1:10])  # Print RQA statistics
+```
