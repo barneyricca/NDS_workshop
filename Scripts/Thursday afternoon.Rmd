@@ -1,0 +1,93 @@
+---
+title: "Thursday afternoon"
+author: "BPR"
+date: '2022-05-19'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(changepoint)
+library(changepoints)
+library(cpop)
+library(tidyverse)
+```
+
+Look at the data
+```{r}
+pull(read_csv("http://bit.ly/NDSAswan")) -> nile
+plot(nile)
+```
+
+Find the changepoint
+```{r}
+cpt.mean(pull(read_csv("http://bit.ly/NDSAswan")),
+         penalty = "SIC",
+         method = "AMOC",  # PELT for multiple pts
+         class = FALSE)
+
+```
+"28" is 1898
+
+Is the change due to the Aswan dam? 
+
+
+```{r}
+cpt.mean(pull(read_csv("http://bit.ly/NDSChange1")),
+         penalty = "SIC",
+         method = "PELT",  # PELT for multiple pts
+         class = FALSE)
+
+```
+```{r}
+plot(pull(read_csv("http://bit.ly/NDSChange1")))
+```
+```{r}
+plot(read_csv("http://bit.ly/NDSSlopeChange")$Y)
+```
+```{r}
+summary(lm(Y~T, data = read_csv("http://bit.ly/NDSSlopeChange")))
+```
+
+
+
+```{r}
+  summary(cpop(read_csv("http://bit.ly/NDSSlopeChange")$T,
+       read_csv("http://bit.ly/NDSSlopeChange")$Y,
+       sd = 1))  # I did a fit to find this value
+
+```
+
+# EWS
+
+```{r}
+
+#install.packages("earlywarnings")
+library(earlywarnings)
+data(foldbif)        # Some undocumented time series
+plot(foldbif)
+ch_ews(foldbif,      # Time series
+       winsize=50,   # Very big
+       alpha=0.05,   # The usual
+       optim=TRUE, 
+       lags) -> 
+  ews_out
+
+```
+```{r}
+win_ent(
+  pull(read_csv("http://bit.ly/NDSEntropy1",
+       header = TRUE)),
+       5)
+
+```
+
+
+```{r}
+
+ews_out
+```
+
+
+
